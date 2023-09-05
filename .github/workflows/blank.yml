@@ -44,7 +44,7 @@ jobs:
           $newFileName = $_.BaseName + '-av1' + $_.Extension
           $destPath = Join-Path $_.Directory.FullName $newFileName
           Write-Output "Converting $($_.FullName) to AV1..."
-          & $ffmpegPath -i $_.FullName -c:v libx264 -crf 35 $destPath
+          & $ffmpegPath -i $_.FullName -c:v libsvtav1 -crf 35 $destPath
         }
         
         Write-Output "Conversion complete."
@@ -52,16 +52,12 @@ jobs:
       env:
         sourceDir: 'C:\Users\runner\Downloads\'
 
-  rclone:
-    runs-on: windows-latest
-
-    steps:
     - name: Download rclone Config
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/MCT-Config/rclone.conf -OutFile C:\Users\runner\Downloads\rclone.conf
       shell: PowerShell
 
-     - name: Set up Rclone
+    - name: Set up Rclone
       run: |
         Invoke-WebRequest -Uri https://downloads.rclone.org/rclone-current-windows-amd64.zip -OutFile rclone.zip
         Expand-Archive -Path rclone.zip -DestinationPath $env:USERPROFILE\Downloads
@@ -72,9 +68,8 @@ jobs:
 
     - name: Use Existing rclone Config
       run: |
-        # Copy your existing rclone config file to the expected location
-        cp C:\Users\runner\Downloads\rclone.conf $HOME/.config/rclone/rclone.conf
-      shell: bash
+        Copy-Item -Path C:\Users\runner\Downloads\rclone.conf -Destination "$env:USERPROFILE\.config\rclone\rclone.conf" -Force
+      shell: PowerShell
 
     - name: Copy Files to Rclone Remote
       run: |
