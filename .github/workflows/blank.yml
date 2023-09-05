@@ -33,7 +33,7 @@ jobs:
         [string]$sourceURL,
 
         [string]$destDir = $sourceDir
-       )
+        )
 
         $scriptPath = 'C:\Users\runner\Downloads\script.ps1'
         Invoke-WebRequest -Uri $sourceURL -OutFile $scriptPath
