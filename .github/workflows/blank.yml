@@ -1,4 +1,4 @@
-name: FFmpeg and Rclone Workflow
+name: FFmpeg Workflow
 
 on:
   push:
@@ -6,58 +6,29 @@ on:
       - main
 
 jobs:
-  setup:
-    runs-on: windows-latest
+  build:
+    runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Code
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Install 7-Zip
-      shell: powershell
-      run: |
-        choco install 7zip -y
-        refreshenv
+      - name: Install FFmpeg
+        run: |
+          sudo curl -L https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz -o /usr/local/bin/ffmpeg.tar.xz
+          7z e /usr/local/bin/ffmpeg.tar.xz
+          7z e /usr/local/bin/ffmpeg.tar
+          sudo chmod a+rx /usr/local/bin/ffmpeg
 
-    - name: Download FFmpeg Archive
-      shell: powershell
-      run: |
-        Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z -OutFile ffmpeg.7z
-        7z x ffmpeg.7z -oC:\
+      - name: Install ffpb
+        run: pip install git+https://github.com/althonos/ffpb
 
-    - name: Download Video
-      shell: powershell
-      run: |
-        Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile output.mkv
-      env:
-        USERPROFILE: C:\Users\runner\
+      - name: Run FFmpeg Command
+        run: |
+          ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v librav1e -preset 8 -crf 26 -g 240 -rav1e-params input-depth=10:tune=0:rc=0:keyint=240:lookahead=120:film-grain=8 -pix_fmt yuv420p10le -threads 8 output.mkv
 
-    - name: Run Conversion Script
-      shell: powershell
-      run: |
-        powershell -ExecutionPolicy Bypass -File C:\Users\runner\Downloads\code.ps1
-      env:
-        USERPROFILE: C:\Users\runner\
-
-    - name: Download rclone Config
-      shell: powershell
-      run: |
-        Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/MCT-Config/rclone.conf -OutFile C:\Users\runner\Downloads\rclone.conf
-
-    - name: Set up Rclone
-      shell: powershell
-      run: |
-        Invoke-WebRequest -Uri https://downloads.rclone.org/rclone-current-windows-amd64.zip -OutFile rclone.zip
-        7z x rclone.zip -oC:\rclone\
-      env:
-        USERPROFILE: C:\Users\runner\
-
-    - name: Use Existing rclone Config
-      shell: powershell
-      run: |
-        Move /Y C:\Users\runner\Downloads\rclone.conf C:\Users\runner\.config\rclone\rclone.conf
-
-    - name: Copy Files to Rclone Remote
-      shell: powershell
-      run: |
-        C:\rclone\rclone.exe copy C:\Users\runner\Downloads\ one: --progress
+      - name: Upload Output
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: output.mkv
