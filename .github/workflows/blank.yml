@@ -1,31 +1,28 @@
-name: FFmpeg Workflow
+name: Install FFmpeg
 
-on:
-  push:
-    branches:
-      - main
+on: [push]
 
 jobs:
-  build:
+  install-ffmpeg:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Repository
+      - name: Checkout code
         uses: actions/checkout@v2
 
-      - name: Install FFmpeg
+      - name: Download and install FFmpeg
         run: |
-          sudo apt install ffmpeg
+          # Download the FFmpeg release tarball
+          curl -Lo ffmpeg.tar.xz https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz
+          
+          # Extract FFmpeg
+          tar -xvf ffmpeg.tar.xz
+          
+          # Make FFmpeg executable (assuming it's in the extracted directory)
+          chmod +x ./ffmpeg
 
-      - name: Install ffpb
-        run: pip install git+https://github.com/althonos/ffpb
+          # Move FFmpeg to a directory in PATH (e.g., /usr/local/bin)
+          sudo mv ./ffmpeg /usr/local/bin/
 
-      - name: Run FFmpeg Command
-        run: |
-          ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v librav1e -pix_fmt yuv420p10le -qp 80 -speed 4 -tile-columns 2 -tile-rows 2 -c:a copy  output.mkv
-
-      - name: Upload Output
-        uses: actions/upload-artifact@v2
-        with:
-          name: output
-          path: output.mkv
+      - name: Verify FFmpeg installation
+        run: ffmpeg -version
