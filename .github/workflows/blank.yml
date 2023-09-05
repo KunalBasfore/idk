@@ -23,7 +23,7 @@ jobs:
       shell: cmd
       run: |
         Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z -OutFile ffmpeg.7z
-        7z x ffmpeg.7z -oC:\Users\runner\Downloads\
+        7z x ffmpeg.7z -o C:\Users\runner\Downloads\
     
     - name: Move FFmpeg Executable
       shell: powershell
