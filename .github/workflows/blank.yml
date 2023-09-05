@@ -27,7 +27,7 @@ jobs:
 
       - name: Run FFmpeg Command
         run: |
-          ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v libx265 -preset slow -pix_fmt yuv420p10le -tune film -profile:v main10 -c:a copy -x265-params pass=1 /dev/null && ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v libx265 -preset slow -pix_fmt yuv420p10le -tune film -profile:v main10 -c:a copy -x265-params pass=2 output.mkv  
+          ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v libx265 -pix_fmt yuv420p10le -crf 24 -x265-params pass=1,profile=main10 -an -f null /dev/null && \ffpb -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v libx265 -crf 24 -pix_fmt yuv420p10le -x265-params pass=2,profile=main10 -c:a aac -b:a 128k output.mkv  
 
       - name: Upload Output
         uses: actions/upload-artifact@v2
