@@ -1,0 +1,11 @@
+name: Check CPU Cores and Threads
+on: [push]
+
+jobs:
+  check-resources:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check CPU Cores and Threads
+        run: |
+          echo "Number of CPU Cores: $(nproc)"
+          echo "Number of CPU Threads: $(nproc --all)"
