@@ -1,36 +1,84 @@
-# This is a basic workflow to help you get started with Actions
+name: FFmpeg and Rclone
 
-name: CI
-
-# Controls when the workflow will run
 on:
-  # Triggers the workflow on push or pull request events but only for the "main" branch
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
-  # Allows you to run this workflow manually from the Actions tab
-  workflow_dispatch:
-
-# A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  # This workflow contains a single job called "build"
-  build:
-    # The type of runner that the job will run on
-    runs-on: ubuntu-latest
+  setup:
+    runs-on: windows-latest
 
-    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
-      - uses: actions/checkout@v3
+    - name: Checkout Code
+      uses: actions/checkout@v2
 
-      # Runs a single command using the runners shell
-      - name: Run a one-line script
-        run: echo Hello, world!
+    - name: Set up FFmpeg
+      run: |
+        $ffmpegPath = 'C:\Users\runner\Downloads\ffmpeg.exe'
+        Invoke-WebRequest -Uri https://ffmpeg.org/releases/ffmpeg-latest-win64-static.zip -OutFile ffmpeg.zip
+        Expand-Archive -Path ffmpeg.zip -DestinationPath $env:USERPROFILE\Downloads
+        Move-Item -Path "$env:USERPROFILE\Downloads\ffmpeg-latest-win64-static\ffmpeg.exe" -Destination $ffmpegPath
+        Remove-Item -Path "$env:USERPROFILE\Downloads\ffmpeg.zip" -Force
+        Remove-Item -Path "$env:USERPROFILE\Downloads\ffmpeg-latest-win64-static" -Recurse -Force
+      shell: PowerShell
 
-      # Runs a set of commands using the runners shell
-      - name: Run a multi-line script
-        run: |
-          echo Add other actions to build,
-          echo test, and deploy your project.
+    - name: Download Video
+      run: |
+        Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile C:\Users\runner\Downloads\output.mkv
+      shell: PowerShell
+
+    - name: Run Conversion Script
+      run: |
+        param (
+          [Parameter(Mandatory=$true)]
+          [string]$sourceDir,
+        
+          [string]$destDir = $sourceDir
+        )
+        
+        $ffmpegPath = 'C:\Users\runner\Downloads\ffmpeg.exe'
+        
+        Write-Output "Starting conversion..."
+        Get-ChildItem $sourceDir -Include *.mp4,*.avi,*.mov,*.wmv,*.flv,*.webm,*.mkv -Recurse | ForEach-Object {
+          $newFileName = $_.BaseName + '-av1' + $_.Extension
+          $destPath = Join-Path $_.Directory.FullName $newFileName
+          Write-Output "Converting $($_.FullName) to AV1..."
+          & $ffmpegPath -i $_.FullName -c:v libx264 -crf 35 $destPath
+        }
+        
+        Write-Output "Conversion complete."
+      shell: PowerShell
+      env:
+        sourceDir: 'C:\Users\runner\Downloads\'
+
+  rclone:
+    runs-on: windows-latest
+
+    steps:
+    - name: Download rclone Config
+      run: |
+        Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/MCT-Config/rclone.conf -OutFile C:\Users\runner\Downloads\rclone.conf
+      shell: PowerShell
+
+     - name: Set up Rclone
+      run: |
+        Invoke-WebRequest -Uri https://downloads.rclone.org/rclone-current-windows-amd64.zip -OutFile rclone.zip
+        Expand-Archive -Path rclone.zip -DestinationPath $env:USERPROFILE\Downloads
+        Move-Item -Path "$env:USERPROFILE\Downloads\rclone-*-windows-amd64\rclone.exe" -Destination 'C:\rclone\rclone.exe'
+        Remove-Item -Path "$env:USERPROFILE\Downloads\rclone.zip" -Force
+        Remove-Item -Path "$env:USERPROFILE\Downloads\rclone-*-windows-amd64" -Recurse -Force
+      shell: PowerShell
+
+    - name: Use Existing rclone Config
+      run: |
+        # Copy your existing rclone config file to the expected location
+        cp C:\Users\runner\Downloads\rclone.conf $HOME/.config/rclone/rclone.conf
+      shell: bash
+
+    - name: Copy Files to Rclone Remote
+      run: |
+        rclone copy C:\Users\runner\Downloads\ one: --progress
+      shell: PowerShell
+      env:
+        sourceDir: 'C:\Users\runner\Downloads\'
