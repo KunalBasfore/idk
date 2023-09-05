@@ -22,7 +22,7 @@ jobs:
 
       - name: Run FFmpeg Command
         run: |
-          ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v librav1e -preset 8 -crf 26 -g 240 -rav1e-params input-depth=10:tune=0:rc=0:keyint=240:lookahead=120:film-grain=8 -pix_fmt yuv420p10le -threads 8 output.mkv
+          ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v librav1e -pix_fmt yuv420p10le -qp 80 -speed 4 -tile-columns 2 -tile-rows 2 -c:a copy  output.mkv
 
       - name: Upload Output
         uses: actions/upload-artifact@v2
