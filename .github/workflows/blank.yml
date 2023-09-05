@@ -16,9 +16,9 @@ jobs:
           7z e ffmpeg.tar.xz
           7z e ffmpeg.tar
           cp -r ffmpeg /usr/local/bin/ffmpeg
-          sudo chmod a+rx /usr/local/bin/ffmpeg && sudo chmod a+rx /usr/local/bin/ffmpeg/bin/ffmpeg
-          cp /usr/local/bin/ffmpeg/bin/ffmpeg /usr/local/bin/ffmpeg
           sudo chmod a+rx /usr/local/bin/ffmpeg
+          cp /usr/local/bin/ffmpeg/bin/ffmpeg /usr/local/bin/ffmpeg
+          sudo chmod x /usr/local/bin/ffmpeg
 
       - name: Navigate to /content/
         run: ffmpeg -version
