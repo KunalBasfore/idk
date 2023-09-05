@@ -24,7 +24,8 @@ jobs:
 
     - name: Download Video
       run: |
-        Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile C:\Users\runner\Downloads\output.mkv
+        Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile output.mkv
+        Move-Item -Path "$env:USERPROFILE\Downloads\output.mkv" -Destination C:\Users\runner\Downloads\output.mkv
       shell: PowerShell
 
     - name: Run Conversion Script
@@ -45,7 +46,7 @@ jobs:
           Write-Output "Converting $($_.FullName) to AV1..."
           & $ffmpegPath -i $_.FullName -c:v libsvtav1 -crf 35 $destPath
         }
-        
+
         Write-Output "Conversion complete."
       shell: PowerShell
       env:
@@ -73,6 +74,4 @@ jobs:
     - name: Copy Files to Rclone Remote
       run: |
         rclone copy C:\Users\runner\Downloads\ one: --progress
-      shell: PowerShell
-      env:
-        sourceDir: 'C:\Users\runner\Downloads\'
+      
