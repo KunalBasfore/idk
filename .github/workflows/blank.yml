@@ -13,12 +13,22 @@ jobs:
     - name: Checkout Code
       uses: actions/checkout@v2
 
-    - name: Set up FFmpeg
+    - name: Install 7-Zip
+      shell: cmd
       run: |
-        Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z -OutFile ffmpeg.zip
-        Expand-Archive -Path ffmpeg.zip -DestinationPath C:\Users\runner\Downloads\
-        Move-Item -Path "C:\Users\runner\Downloads\ffmpeg-2023-09-04-git-f8503b4c33-full_build\bin\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
+        choco install 7zip -y
+        refreshenv
+
+    - name: Download FFmpeg Archive
+      shell: cmd
+      run: |
+        Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z -OutFile ffmpeg.7z
+        7z x ffmpeg.7z -oC:\Users\runner\Downloads\
+    
+    - name: Move FFmpeg Executable
       shell: powershell
+      run: |
+        Move-Item -Path "C:\Users\runner\Downloads\ffmpeg-2023-09-04-git-f8503b4c33-full_build\bin\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
 
     - name: Download Video
       run: |
