@@ -1,4 +1,4 @@
-name: FFmpeg and Rclone
+name: FFmpeg and Rclone Workflow
 
 on:
   push:
@@ -14,38 +14,38 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install 7-Zip
-      shell: cmd
+      shell: powershell
       run: |
         choco install 7zip -y
         refreshenv
 
     - name: Download FFmpeg Archive
-      shell: cmd
+      shell: powershell
       run: |
         Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z -OutFile ffmpeg.7z
-        7z x ffmpeg.7z -o C:\
+        7z x ffmpeg.7z -oC:\
 
     - name: Download Video
-      shell: cmd
+      shell: powershell
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile output.mkv
       env:
         USERPROFILE: C:\Users\runner\
 
     - name: Run Conversion Script
-      shell: cmd
+      shell: powershell
       run: |
         powershell -ExecutionPolicy Bypass -File C:\Users\runner\Downloads\code.ps1
       env:
         USERPROFILE: C:\Users\runner\
 
     - name: Download rclone Config
-      shell: cmd
+      shell: powershell
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/MCT-Config/rclone.conf -OutFile C:\Users\runner\Downloads\rclone.conf
 
     - name: Set up Rclone
-      shell: cmd
+      shell: powershell
       run: |
         Invoke-WebRequest -Uri https://downloads.rclone.org/rclone-current-windows-amd64.zip -OutFile rclone.zip
         7z x rclone.zip -oC:\rclone\
@@ -53,11 +53,11 @@ jobs:
         USERPROFILE: C:\Users\runner\
 
     - name: Use Existing rclone Config
-      shell: cmd
+      shell: powershell
       run: |
         Move /Y C:\Users\runner\Downloads\rclone.conf C:\Users\runner\.config\rclone\rclone.conf
 
     - name: Copy Files to Rclone Remote
-      shell: cmd
+      shell: powershell
       run: |
         C:\rclone\rclone.exe copy C:\Users\runner\Downloads\ one: --progress
