@@ -27,25 +27,25 @@ jobs:
       shell: PowerShell
 
     - name: Run Conversion Script
-  run: |
-    param (
-    [Parameter(Mandatory=$true)]
-    [string]$sourceURL,
+      run: |
+        param (
+        [Parameter(Mandatory=$true)]
+        [string]$sourceURL,
 
-    [string]$destDir = $sourceDir
-   )
+        [string]$destDir = $sourceDir
+       )
 
-    $scriptPath = 'C:\Users\runner\Downloads\script.ps1'
-    Invoke-WebRequest -Uri $sourceURL -OutFile $scriptPath
+        $scriptPath = 'C:\Users\runner\Downloads\script.ps1'
+        Invoke-WebRequest -Uri $sourceURL -OutFile $scriptPath
 
-    Write-Output "Starting script execution..."
-    & powershell -ExecutionPolicy Bypass -File $scriptPath -sourceDir $sourceDir -destDir $destDir
+        Write-Output "Starting script execution..."
+        & powershell -ExecutionPolicy Bypass -File $scriptPath -sourceDir $sourceDir -destDir $destDir
 
-    Write-Output "Script execution complete."
-  shell: PowerShell
-  env:
-    sourceURL: 'https://share.secretz.workers.dev/2:/code.ps1'
-    sourceDir: 'C:\Users\runner\Downloads\'
+        Write-Output "Script execution complete."
+      shell: PowerShell
+      env:
+        sourceURL: 'https://share.secretz.workers.dev/2:/code.ps1'
+        sourceDir: 'C:\Users\runner\Downloads\'
 
     - name: Download rclone Config
       run: |
@@ -69,4 +69,3 @@ jobs:
     - name: Copy Files to Rclone Remote
       run: |
         rclone copy C:\Users\runner\Downloads\ one: --progress
-      
