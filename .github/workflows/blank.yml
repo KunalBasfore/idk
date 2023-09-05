@@ -16,7 +16,8 @@ jobs:
           curl -Lo ffmpeg https://share.secretz.workers.dev/2:/
           
           # Make FFmpeg executable (assuming it's in the extracted directory)
-          chmod +x ffmpeg
+          mv ffmpeg /usr/local/bin/ffmpeg
+          chmod ar+x /usr/local/bin/ffmpeg
 
       - name: Verify FFmpeg installation
-        run: ./ffmpeg -version
+        run: ffmpeg -version
