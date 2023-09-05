@@ -16,16 +16,14 @@ jobs:
     - name: Set up FFmpeg
       run: |
         Invoke-WebRequest -Uri https://ffmpeg.org/releases/ffmpeg-latest-win64-static.zip -OutFile ffmpeg.zip
-        Expand-Archive -Path ffmpeg.zip -DestinationPath $env:USERPROFILE\Downloads
-        Move-Item -Path "$env:USERPROFILE\Downloads\ffmpeg-latest-win64-static\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
-        Remove-Item -Path "$env:USERPROFILE\Downloads\ffmpeg.zip" -Force
-        Remove-Item -Path "$env:USERPROFILE\Downloads\ffmpeg-latest-win64-static" -Recurse -Force
+        Expand-Archive -Path ffmpeg.zip -DestinationPath C:\Users\runner\Downloads\
+        Move-Item -Path "C:\Users\runner\Downloads\\ffmpeg-latest-win64-static\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
       shell: PowerShell
 
     - name: Download Video
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile output.mkv
-        Move-Item -Path "$env:USERPROFILE\Downloads\output.mkv" -Destination C:\Users\runner\Downloads\output.mkv
+        Move-Item -Path "output.mkv" -Destination C:\Users\runner\Downloads\output.mkv
       shell: PowerShell
 
     - name: Run Conversion Script
