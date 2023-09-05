@@ -21,3 +21,16 @@ jobs:
           
       - name: Navigate to /content/
         run: ffmpeg -version
+       
+      - name: Install ffpb
+        run: pip install git+https://github.com/althonos/ffpb
+
+      - name: Run FFmpeg Command
+        run: |
+          ffpb -y -i "https://share.secretz.workers.dev/2:/input.mkv" -c:v librav1e -pix_fmt yuv420p10le -qp 80 -speed 4 -tile-columns 2 -tile-rows 2 -c:a copy output.mkv
+
+      - name: Upload Output
+        uses: actions/upload-artifact@v2
+        with:
+          name: output
+          path: output.mkv
