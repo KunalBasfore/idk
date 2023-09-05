@@ -18,8 +18,5 @@ jobs:
           # Make FFmpeg executable (assuming it's in the extracted directory)
           chmod +x ffmpeg
 
-          # Move FFmpeg to a directory in PATH (e.g., /usr/local/bin)
-          sudo mv ffmpeg /usr/local/bin/
-
       - name: Verify FFmpeg installation
-        run: ffmpeg -version
+        run: ./ffmpeg -version
