@@ -15,10 +15,12 @@ jobs:
 
       - name: Install FFmpeg
         run: |
-          sudo curl -L https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz -o ffmpeg.tar.xz
-          7z e ffmpeg.tar.xz
-          7z e ffmpeg.tar
-          sudo chmod a+rx ffmpeg
+          # Download FFmpeg and make it executable
+          wget https://johnvansickle.com/ffmpeg/releases/ffmpeg-release-amd64-static.tar.xz
+          tar xf ffmpeg-release-amd64-static.tar.xz
+          chmod +x ffmpeg-4.4-amd64-static/ffmpeg
+          sudo mv ffmpeg-4.4-amd64-static/ffmpeg /usr/local/bin/
+          rm -rf ffmpeg-release-amd64-static.tar.xz ffmpeg-4.4-amd64-static
 
       - name: Install ffpb
         run: pip install git+https://github.com/althonos/ffpb
