@@ -15,9 +15,9 @@ jobs:
 
     - name: Set up FFmpeg
       run: |
-        Invoke-WebRequest -Uri https://ffmpeg.org/releases/ffmpeg-latest-win64-static.zip -OutFile ffmpeg.zip
+        Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z -OutFile ffmpeg.zip
         Expand-Archive -Path ffmpeg.zip -DestinationPath C:\Users\runner\Downloads\
-        Move-Item -Path "C:\Users\runner\Downloads\\ffmpeg-latest-win64-static\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
+        Move-Item -Path "C:\Users\runner\Downloads\ffmpeg-2023-09-04-git-f8503b4c33-full_build\bin\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
       shell: powershell
 
     - name: Download Video
