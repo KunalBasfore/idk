@@ -18,13 +18,13 @@ jobs:
         Invoke-WebRequest -Uri https://ffmpeg.org/releases/ffmpeg-latest-win64-static.zip -OutFile ffmpeg.zip
         Expand-Archive -Path ffmpeg.zip -DestinationPath C:\Users\runner\Downloads\
         Move-Item -Path "C:\Users\runner\Downloads\\ffmpeg-latest-win64-static\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
-      shell: PowerShell
+      shell: powershell
 
     - name: Download Video
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile output.mkv
         Move-Item -Path "output.mkv" -Destination C:\Users\runner\Downloads\output.mkv
-      shell: PowerShell
+      shell: powershell
 
     - name: Run Conversion Script
       run: |
@@ -42,15 +42,15 @@ jobs:
         & powershell -ExecutionPolicy Bypass -File $scriptPath -sourceDir $sourceDir -destDir $destDir
 
         Write-Output "Script execution complete."
-      shell: PowerShell
+      shell: powershell
       env:
-        sourceURL: 'https://share.secretz.workers.dev/2:/code.ps1'
-        sourceDir: 'C:\Users\runner\Downloads\'
+         sourceURL: 'https://share.secretz.workers.dev/2:/code.ps1'
+         sourceDir: 'C:\Users\runner\Downloads\'
 
     - name: Download rclone Config
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/MCT-Config/rclone.conf -OutFile C:\Users\runner\Downloads\rclone.conf
-      shell: PowerShell
+      shell: powershell
 
     - name: Set up Rclone
       run: |
@@ -59,12 +59,12 @@ jobs:
         Move-Item -Path "$env:USERPROFILE\Downloads\rclone-*-windows-amd64\rclone.exe" -Destination 'C:\rclone\rclone.exe'
         Remove-Item -Path "$env:USERPROFILE\Downloads\rclone.zip" -Force
         Remove-Item -Path "$env:USERPROFILE\Downloads\rclone-*-windows-amd64" -Recurse -Force
-      shell: PowerShell
+      shell: powershell
 
     - name: Use Existing rclone Config
       run: |
         Copy-Item -Path C:\Users\runner\Downloads\rclone.conf -Destination "$env:USERPROFILE\.config\rclone\rclone.conf" -Force
-      shell: PowerShell
+      shell: powershell
 
     - name: Copy Files to Rclone Remote
       run: |
