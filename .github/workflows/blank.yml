@@ -23,59 +23,41 @@ jobs:
       shell: cmd
       run: |
         Invoke-WebRequest -Uri https://www.gyan.dev/ffmpeg/builds/ffmpeg-git-full.7z -OutFile ffmpeg.7z
-        7z x ffmpeg.7z -o C:\Users\runner\Downloads\
-    
-    - name: Move FFmpeg Executable
-      shell: powershell
-      run: |
-        Move-Item -Path "C:\Users\runner\Downloads\ffmpeg-2023-09-04-git-f8503b4c33-full_build\bin\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
+        7z x ffmpeg.7z -o C:\
 
     - name: Download Video
+      shell: cmd
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/output.mkv -OutFile output.mkv
-        Move-Item -Path "output.mkv" -Destination C:\Users\runner\Downloads\output.mkv
-      shell: powershell
+      env:
+        USERPROFILE: C:\Users\runner\
 
     - name: Run Conversion Script
+      shell: cmd
       run: |
-        param (
-        [Parameter(Mandatory=$true)]
-        [string]$sourceURL,
-
-        [string]$destDir = $sourceDir
-        )
-
-        $scriptPath = 'C:\Users\runner\Downloads\script.ps1'
-        Invoke-WebRequest -Uri $sourceURL -OutFile $scriptPath
-
-        Write-Output "Starting script execution..."
-        & powershell -ExecutionPolicy Bypass -File $scriptPath -sourceDir $sourceDir -destDir $destDir
-
-        Write-Output "Script execution complete."
-      shell: powershell
+        powershell -ExecutionPolicy Bypass -File C:\Users\runner\Downloads\code.ps1
       env:
-         sourceURL: 'https://share.secretz.workers.dev/2:/code.ps1'
-         sourceDir: 'C:\Users\runner\Downloads\'
+        USERPROFILE: C:\Users\runner\
 
     - name: Download rclone Config
+      shell: cmd
       run: |
         Invoke-WebRequest -Uri https://share.secretz.workers.dev/2:/MCT-Config/rclone.conf -OutFile C:\Users\runner\Downloads\rclone.conf
-      shell: powershell
 
     - name: Set up Rclone
+      shell: cmd
       run: |
         Invoke-WebRequest -Uri https://downloads.rclone.org/rclone-current-windows-amd64.zip -OutFile rclone.zip
-        Expand-Archive -Path rclone.zip -DestinationPath $env:USERPROFILE\Downloads
-        Move-Item -Path "$env:USERPROFILE\Downloads\rclone-*-windows-amd64\rclone.exe" -Destination 'C:\rclone\rclone.exe'
-        Remove-Item -Path "$env:USERPROFILE\Downloads\rclone.zip" -Force
-        Remove-Item -Path "$env:USERPROFILE\Downloads\rclone-*-windows-amd64" -Recurse -Force
-      shell: powershell
+        7z x rclone.zip -oC:\rclone\
+      env:
+        USERPROFILE: C:\Users\runner\
 
     - name: Use Existing rclone Config
+      shell: cmd
       run: |
-        Copy-Item -Path C:\Users\runner\Downloads\rclone.conf -Destination "$env:USERPROFILE\.config\rclone\rclone.conf" -Force
-      shell: powershell
+        Move /Y C:\Users\runner\Downloads\rclone.conf C:\Users\runner\.config\rclone\rclone.conf
 
     - name: Copy Files to Rclone Remote
+      shell: cmd
       run: |
-        rclone copy C:\Users\runner\Downloads\ one: --progress
+        C:\rclone\rclone.exe copy C:\Users\runner\Downloads\ one: --progress
