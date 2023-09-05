@@ -15,10 +15,9 @@ jobs:
 
     - name: Set up FFmpeg
       run: |
-        $ffmpegPath = 'C:\Users\runner\Downloads\ffmpeg.exe'
         Invoke-WebRequest -Uri https://ffmpeg.org/releases/ffmpeg-latest-win64-static.zip -OutFile ffmpeg.zip
         Expand-Archive -Path ffmpeg.zip -DestinationPath $env:USERPROFILE\Downloads
-        Move-Item -Path "$env:USERPROFILE\Downloads\ffmpeg-latest-win64-static\ffmpeg.exe" -Destination $ffmpegPath
+        Move-Item -Path "$env:USERPROFILE\Downloads\ffmpeg-latest-win64-static\ffmpeg.exe" -Destination C:\Users\runner\Downloads\ffmpeg.exe
         Remove-Item -Path "$env:USERPROFILE\Downloads\ffmpeg.zip" -Force
         Remove-Item -Path "$env:USERPROFILE\Downloads\ffmpeg-latest-win64-static" -Recurse -Force
       shell: PowerShell
